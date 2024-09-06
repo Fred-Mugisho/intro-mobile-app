@@ -4,9 +4,7 @@ from flet import (
     Page, Text, TextField, ElevatedButton, Column, Row, IconButton, icons, 
     ListView, Container, SnackBar, CupertinoFilledButton
 )
-from database import (
-    create_table, add_task, get_tasks, delete_task, update_task
-)
+from database import *
 
 def main(page: Page):
     page.title = "Todo"
@@ -82,30 +80,36 @@ def main(page: Page):
         # Récupérer la tâche actuelle
         tasks = get_tasks()
         current_task = next((t for t in tasks if t[0] == task_id), None)
+
         if current_task:
-            edit_window = flet.Popup(
+            # Création d'un TextField pour modifier la tâche
+            edit_input = TextField(label="Nouvelle tâche", value=current_task[1], autofocus=True)
+
+            # Fonction pour fermer la fenêtre d'édition
+            def close_dialog(e):
+                dialog.open = False
+                page.update()
+
+            # Créer la boîte de dialogue pour éditer la tâche
+            dialog = flet.AlertDialog(
+                title=Text("Modifier la tâche", size=20),
                 content=Column(
                     [
-                        Text("Modifier la tâche", size=20),
-                        TextField(
-                            label="Nouvelle tâche",
-                            value=current_task[1],
-                            autofocus=True,
-                            on_submit=lambda e: save_edit(task_id, edit_input.value)
-                        ),
+                        edit_input,
                         Row(
                             [
-                                ElevatedButton("Enregistrer", on_click=lambda e: save_edit(task_id, edit_input.value)),
-                                ElevatedButton("Annuler", on_click=lambda e: edit_window.close()),
+                                ElevatedButton("Enregistrer", on_click=save_edit(task_id, edit_input.value)),
+                                ElevatedButton("Annuler", on_click=close_dialog),
                             ]
                         )
                     ],
                     tight=True
                 )
             )
-            edit_input = edit_window.content.controls[1]
-            edit_window.open = True
-            page.overlay.append(edit_window)
+
+            # Ouvrir la boîte de dialogue
+            page.add(dialog)
+            dialog.open = True
             page.update()
 
     # Fonction pour enregistrer l'édition
@@ -140,7 +144,10 @@ def main(page: Page):
 
     # Ajouter les composants à la page
     page.add(
-        Text("Liste des Tâches", size=24, weight="bold"),
+        Container(
+            content=Text("Liste des Tâches", size=24, weight="bold"),
+            padding=30
+        ),
         Row([task_input, add_button], alignment="center"),
         task_list
     )
