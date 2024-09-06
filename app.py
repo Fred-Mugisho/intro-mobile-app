@@ -20,7 +20,7 @@ def main(page: ft.Page):
             )
         else:
             page.add(
-                ft.Text("Compte creer avec succes")
+                ft.Text("Compte creer avec succès")
             )
         nom_complet.value = ""
         email.value = ""
@@ -32,7 +32,7 @@ def main(page: ft.Page):
     )
     nom_complet = ft.TextField(label="Nom complet", width=400)
     email = ft.TextField(label="Email", width=400)
-    password = ft.TextField(label="Mot de passe", width=190)
+    password = ft.TextField(label="Mot de passe", width=190, password=True)
     confirm_password = ft.TextField(label="Confirmer mot de passe", width=200)
     
     page.add(
@@ -53,6 +53,9 @@ def main(page: ft.Page):
     )
     page.add(
         ft.CupertinoFilledButton(content=ft.Text("Sign up"), width=400, on_click=add),
+    )
+    page.add(
+        ft.Text("Do you have account? Sign in",)
     )
     
 ft.app(main)
